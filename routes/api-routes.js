@@ -13,9 +13,12 @@ module.exports = (app)=>{
     })
 
     app.put("/api/workouts/:id", (req,res)=>{
-        
+
     })
 
+    app.post('/api/workouts', (req,res) => {
+        
+    });
 
 
 }
