@@ -2,7 +2,6 @@ const express = require("express");
 const logger = require('morgan');
 const mongoose = require("mongoose");
 
-
 const PORT = process.env.PORT || 3000
 
 const app = express();
@@ -10,7 +9,6 @@ const app = express();
 app.use(logger("dev"));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-
 app.use(express.static("public"));
 
 mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/fitnesswitness", {
@@ -18,22 +16,20 @@ mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/fitnesswitness"
   useFindAndModify: false
 });
 
-const db = require('./models')
+const db = require('./models/index')
 const path = require('path');
 
-// module.exports = (app) => {
-
-app.get('/',(req,res)=>{
-    console.log("ding")
-    res.sendFile(path.join(__dirname, './public/index.html'))
-})
-
-app.get('/exercise', (req,res) => {
-  console.log("exercise DING")
-  res.sendFile(path.join(__dirname, './public/exercise.html'))
+app.get("/",(req,res)=>{
+    console.log("MAIN DING")
+    res.sendFile(path.join(__dirname, "./public/index.html"))
 });
 
-app.get('/stats', (req,res) => res.sendFile(path.join(__dirname, './public/stats.html')));
+app.get("/exercise", (req,res) => {
+  console.log("exercise DING")
+  res.sendFile(path.join(__dirname, "./public/exercise.html"))
+});
+
+app.get("/stats", (req,res) => res.sendFile(path.join(__dirname, "./public/stats.html")));
 
 
 app.get("/api/workouts", (req,res)=>{
@@ -60,12 +56,10 @@ app.put("/api/workouts/:id", (req,res)=>{
 })
 
 app.post("/api/workouts", (req,res) => {
-  db.Workout.create({}).then(newWorkout => {
+  db.Workout.create(req.body).then(newWorkout => {
       res.json(newWorkout);
   });
 });
-// }
-
 
 // routes
 // app.use(require("./routes/html-routes.js"));
