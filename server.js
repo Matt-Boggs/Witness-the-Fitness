@@ -18,9 +18,58 @@ mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/fitnesswitness"
   useFindAndModify: false
 });
 
+const db = require('./models')
+const path = require('path');
+
+// module.exports = (app) => {
+
+app.get('/',(req,res)=>{
+    console.log("ding")
+    res.sendFile(path.join(__dirname, './public/index.html'))
+})
+
+app.get('/exercise', (req,res) => {
+  console.log("exercise DING")
+  res.sendFile(path.join(__dirname, './public/exercise.html'))
+});
+
+app.get('/stats', (req,res) => res.sendFile(path.join(__dirname, './public/stats.html')));
+
+
+app.get("/api/workouts", (req,res)=>{
+  db.Workout.find({})
+  .populate("exercises")
+  .then(dbWorkout=>{
+      console.log(dbWorkout)
+      res.json(dbWorkout)
+  })
+  .catch(err=>{
+      res.json(err)
+  })
+})
+
+app.put("/api/workouts/:id", (req,res)=>{
+  db.Workout.findOneAndUpdate(
+    {_id: req.params.id},
+    {$push: {exercises: req.body}},
+    {upsert: true, useFindandModify:false},
+    (workoutUpdate)=>{
+      res.json(workoutUpdate)
+    }
+    )
+})
+
+app.post("/api/workouts", (req,res) => {
+  db.Workout.create({}).then(newWorkout => {
+      res.json(newWorkout);
+  });
+});
+// }
+
+
 // routes
-app.use(require("./routes/html-routes.js"));
-app.use(require("./routes/api-routes.js"));
+// app.use(require("./routes/html-routes.js"));
+// app.use(require("./routes/api-routes.js"));
 
 app.listen(PORT, () => {
   console.log(`App running on port ${PORT}!`);
