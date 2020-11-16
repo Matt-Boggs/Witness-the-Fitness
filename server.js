@@ -16,51 +16,66 @@ mongoose.connect(process.env.MONGODB_URI || "mongodb://localhost/fitnesswitness"
   useFindAndModify: false
 });
 
-const db = require('./models/index')
+const db = require('./models/index');
 const path = require('path');
 
 app.get("/",(req,res)=>{
-    console.log("MAIN DING")
-    res.sendFile(path.join(__dirname, "./public/index.html"))
+    console.log("MAIN DING");
+    res.sendFile(path.join(__dirname, "./public/index.html"));
 });
 
-app.get("/exercise", (req,res) => {
-  console.log("exercise DING")
-  res.sendFile(path.join(__dirname, "./public/exercise.html"))
+app.get("/exercise", (req,res)=>{
+  console.log("exercise DING");
+  res.sendFile(path.join(__dirname, "./public/exercise.html"));
 });
 
-app.get("/stats", (req,res) => res.sendFile(path.join(__dirname, "./public/stats.html")));
+app.get("/stats", (req,res)=>res.sendFile(path.join(__dirname, "./public/stats.html")));
 
 
 app.get("/api/workouts", (req,res)=>{
-  db.Workout.find({})
-  .populate("exercises")
+  console.log("log for GET /workouts:  " + req.body);
+
+  db.Workout.find()
+  // .populate("exercises")
   .then(dbWorkout=>{
-      console.log(dbWorkout)
-      res.json(dbWorkout)
+      // console.log(`dbWorkout: ${dbWorkout}`);
+      res.json(dbWorkout);
   })
   .catch(err=>{
-      res.json(err)
+      res.json(err);
   })
-})
+});
 
 app.put("/api/workouts/:id", (req,res)=>{
+  console.log(`log for PUT /id: ${req.body}`);
   db.Workout.findOneAndUpdate(
     {_id: req.params.id},
     {$push: {exercises: req.body}},
     {upsert: true, useFindandModify:false},
     (workoutUpdate)=>{
-      res.json(workoutUpdate)
+      res.json(workoutUpdate);
     }
     )
-})
+});
 
-app.post("/api/workouts", (req,res) => {
+app.post("/api/workouts", (req,res)=>{
+  console.log(`log for POST /workouts: ${req.body}`);
   db.Workout.create(req.body).then(newWorkout => {
       res.json(newWorkout);
   });
 });
 
+app.get("/api/workouts/range", (req,res)=>{
+  db.Workout.find({})
+  // .populate("exercises")
+  .then(dbWorkout=>{
+      console.log(dbWorkout);
+      res.json(dbWorkout);
+  })
+  .catch(err=>{
+      res.json(err);
+  })
+});
 // routes
 // app.use(require("./routes/html-routes.js"));
 // app.use(require("./routes/api-routes.js"));
