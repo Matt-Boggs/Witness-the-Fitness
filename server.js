@@ -38,7 +38,7 @@ app.get("/api/workouts", (req,res)=>{
   console.log("log for GET /workouts:  " + req.body);
 
   db.Workout.find()
-  // .populate("exercises")
+  .populate("exercises")
   .then(dbWorkout=>{
       // console.log(`dbWorkout: ${dbWorkout}`);
       res.json(dbWorkout);
@@ -69,7 +69,7 @@ app.post("/api/workouts", (req,res)=>{
 
 app.get("/api/workouts/range", (req,res)=>{
   db.Workout.find({})
-  // .populate("exercises")
+  .populate("exercises")
   .then(dbWorkout=>{
       console.log(dbWorkout);
       res.json(dbWorkout);
